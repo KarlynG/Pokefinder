@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import Spinner from './Spinner';
 
 function DataFetching() {
     const [pokemon, setPokemon] = useState([]);
     const [busqueda, setbusqueda] = useState('');
     const [loading, setLoading] = useState(true);
     const [pokeid, setPokeid] = useState(5);
+    const [cargando, setCargando] = useState(false);
 
     const onChange = (e) => {
         setbusqueda(e.target.value);
@@ -24,9 +26,9 @@ function DataFetching() {
 
     const handleClick3 = (e) => {
         e.preventDefault();
-        var data = "Nombre: " + pokemon[pokeid].name + 
-                    "\nPeso: " + pokemon[pokeid].weight + 
-                    "0 gramos\nAltura: " + pokemon[pokeid].height + 
+        var data = "Nombre: " + pokemon[pokeid].name +
+            "\nPeso: " + pokemon[pokeid].weight +
+            "0 gramos\nAltura: " + pokemon[pokeid].height +
             "0 cm\nTipo(s): ";
 
         for (let i = 0; i < pokemon[pokeid].types.length; i++) {
@@ -34,12 +36,12 @@ function DataFetching() {
             if (pokemon[pokeid].types.length > 1) data = data + "/";
         }
         if (pokemon[pokeid].types.length === 2) data = data.slice(0, -1);
-        
+
         const element = document.createElement("a");
         const file = new Blob([data], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
         element.download = "PokemonData.txt";
-        document.body.appendChild(element); 
+        document.body.appendChild(element);
         element.click();
     };
 
@@ -47,7 +49,10 @@ function DataFetching() {
         e.preventDefault();
         if (busqueda == '') return;
         setbusqueda(e.target.value);
+
+        setCargando(true);
         ConsultarAPI();
+
         setLoading(true);
     }
 
@@ -55,13 +60,14 @@ function DataFetching() {
 
         axios.get(`http://localhost:5000/api/pokemons/${busqueda}`)
             .then(res => {
-                setPokemon(res.data)
+                setPokemon(res.data);
+                setCargando(false);
             })
             .catch(err => {
                 console.log(err)
             })
     }
-    
+
     const Capitalize = (str) => {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
@@ -101,9 +107,13 @@ function DataFetching() {
 
                             <div class="card-body">
                                 <ul>
-                                    {
-                                        pokemon.map(pokemons => <li key={pokemons.id}><a href="#" data-pokemon={pokemons.id} onClick={handleClick}>{pokemons.name}</a><hr /></li>)
-                                    }
+                                    {cargando ? <Spinner />
+                                        : (
+
+                                            pokemon.map(pokemons => <li key={pokemons.id}><a href="#" data-pokemon={pokemons.id} onClick={handleClick}>{pokemons.name}</a><hr /></li>)
+
+                                        )}
+
                                 </ul>
                             </div>
                         </div>
@@ -153,7 +163,7 @@ function DataFetching() {
                                         <div class="card-footer grid bg-white">
                                             <a href="#" class="btn btn-primary" onClick={handleClick3}>Descargar datos</a>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             </div>
