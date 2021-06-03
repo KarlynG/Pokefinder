@@ -6,7 +6,7 @@
 
 ## Funcionalidades
 #### - Buscar pokemones por nombre
-#### - Filtrar por nombre
+#### - Filtrar por criterio de busqueda
 #### - Información del Pokemon seleccionado
 #### - Descargar datos del Pokemon seleccionado
 
